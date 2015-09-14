@@ -11,9 +11,8 @@ ALL_PUNCT = [",",";", ":", "'",'""',"''","-", "``",".","!","?"]
 END_SENTENCE_PUNCT = [".","!","?"]
 IGNORE_PUNCT = ["''", "``", '""']
 
-def add_word_to_unigram_sentence(sentence, word):
+def add_word_to_sentence(sentence, word):
 	space = True
-	if word == "i": word = word.upper()  # Make i into I
 
 	if sentence == "":  # Handling the start of a sentence.
 		if word in ALL_PUNCT:
@@ -39,16 +38,48 @@ def generate_unigram_sentence(sentence_number, tokens):
 		word = None
 		while word not in END_SENTENCE_PUNCT:			
 			word = random.choice(tokens).strip()
-			sentence, word = add_word_to_unigram_sentence(sentence, word)
+			sentence, word = add_word_to_sentence(sentence, word)
 		print sentence
 		print "\n"
 
+def bigram_from_tokens(tokens):
+	bigram = {}
+	for i in range(len(tokens) - 1):
+		token_curr = tokens[i]
+		token_next = tokens[i + 1]
+		if not bigram.get(token_curr): bigram[token_curr] = {}
+		if not bigram[token_curr].get(token_next): bigram[token_curr][token_next] = 1
+		else: bigram[token_curr][token_next] += 1
+	return bigram
+
+def word_from_bigram_and_word(bigram, word):
+	tokens_for_word = []
+	for second_word in bigram[word].keys():
+		for i in range(bigram[word][second_word]):
+			tokens_for_word.append(second_word)
+	word = random.choice(tokens_for_word).strip()
+	return word
+
+def generate_bigram_sentences(sentence_number, bigram):
+	for i in range(sentence_number):
+		starting_word = "."
+		while starting_word in END_SENTENCE_PUNCT:
+			starting_word = random.choice(bigram.keys())
+		sentence = starting_word.title()
+		base_word = starting_word
+		word = None
+		while word not in END_SENTENCE_PUNCT:
+			word = word_from_bigram_and_word(bigram, base_word)
+			sentence, word = add_word_to_sentence(sentence, word)
+			if word: 
+				base_word = word
+		print sentence
+		print "\n"
 
 def file_to_tokens(file_name):
 	f = open(file_name)
 	text = " ".join(f.readlines())		
 	text = text.decode('ISO-8859-1').lower()
-	#text = text.decode('utf-16').lower()
 	tokens = nltk.word_tokenize(text)
 	f.close()
 	return tokens
@@ -67,9 +98,13 @@ def main(save_model_name, sentence_number, dir_name, file_name):
 		tokens = file_to_tokens(file_name)
 	else:  # One of these two will always be populated, based on how this function is called.
 		tokens = dir_to_tokens(dir_name)
+	bigram = bigram_from_tokens(tokens)
 
 	if random_sentence_number:
+		print "UNIGRAM SENTENCES:\n"
 		generate_unigram_sentence(sentence_number, tokens)
+		print "BIGRAM SENTENCES:\n"
+		generate_bigram_sentences(sentence_number, bigram)
 	end = datetime.datetime.now()
 
 	print "\nProcessed %d tokens." % len(tokens)
