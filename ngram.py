@@ -5,76 +5,8 @@ import datetime
 nltk.download('punkt')  # Isn't installed by default with NLTK, needed for tokenize.
 from nltk import word_tokenize
 
-import random
-
-ALL_PUNCT = [",",";", ":", "'",'""',"''","-", "``",".","!","?"]
-END_SENTENCE_PUNCT = [".","!","?"]
-IGNORE_PUNCT = ["''", "``", '""']
-
-def add_word_to_sentence(sentence, word):
-	space = True
-
-	if sentence == "":  # Handling the start of a sentence.
-		if word in ALL_PUNCT:
-			return sentence, None  # Continue with loop, don't start sentence with punctuation.
-		else:
-			word = word.title()  # Capitalize first letter of first word in a sentence.
-			space = False
-
-	elif word in ALL_PUNCT: # Handling punctuation not at the start of a sentence
-		space = False
-		if word in IGNORE_PUNCT:
-			return sentence, None  # Continue with loop, don't write the punctuation we want to ignore.
-		if sentence[-1] in ALL_PUNCT:  # Don't place two punctuation tokens next to one another.  Delete the first.
-			sentence = sentence[:-1]
-
-	if space: sentence += " "
-	sentence += word
-	return sentence, word
-
-def generate_unigram_sentence(sentence_number, tokens):
-	for i in range(sentence_number):
-		sentence = ""
-		word = None
-		while word not in END_SENTENCE_PUNCT:			
-			word = random.choice(tokens).strip()
-			sentence, word = add_word_to_sentence(sentence, word)
-		print sentence
-		print "\n"
-
-def bigram_from_tokens(tokens):
-	bigram = {}
-	for i in range(len(tokens) - 1):
-		token_curr = tokens[i]
-		token_next = tokens[i + 1]
-		if not bigram.get(token_curr): bigram[token_curr] = {}
-		if not bigram[token_curr].get(token_next): bigram[token_curr][token_next] = 1
-		else: bigram[token_curr][token_next] += 1
-	return bigram
-
-def word_from_bigram_and_word(bigram, word):
-	tokens_for_word = []
-	for second_word in bigram[word].keys():
-		for i in range(bigram[word][second_word]):
-			tokens_for_word.append(second_word)
-	word = random.choice(tokens_for_word).strip()
-	return word
-
-def generate_bigram_sentences(sentence_number, bigram):
-	for i in range(sentence_number):
-		starting_word = "."
-		while starting_word in END_SENTENCE_PUNCT:
-			starting_word = random.choice(bigram.keys())
-		sentence = starting_word.title()
-		base_word = starting_word
-		word = None
-		while word not in END_SENTENCE_PUNCT:
-			word = word_from_bigram_and_word(bigram, base_word)
-			sentence, word = add_word_to_sentence(sentence, word)
-			if word: 
-				base_word = word
-		print sentence
-		print "\n"
+from bigram_model import generate_bigram_sentences, build_bigram_model
+from unigram_model import generate_unigram_sentences, build_unigram_model
 
 def file_to_tokens(file_name):
 	f = open(file_name)
@@ -92,19 +24,20 @@ def dir_to_tokens(dir_name):
 	return tokens
 
 
-def main(save_model_name, sentence_number, dir_name, file_name):
+def main(sentence_number, dir_name, file_name):
 	start = datetime.datetime.now()
 	if file_name:
 		tokens = file_to_tokens(file_name)
 	else:  # One of these two will always be populated, based on how this function is called.
 		tokens = dir_to_tokens(dir_name)
-	bigram = bigram_from_tokens(tokens)
+	unigram_model = build_unigram_model(tokens)
+	bigram_model = build_bigram_model(tokens)
 
 	if random_sentence_number:
 		print "UNIGRAM SENTENCES:\n"
-		generate_unigram_sentence(sentence_number, tokens)
+		generate_unigram_sentences(unigram_model, sentence_number)
 		print "BIGRAM SENTENCES:\n"
-		generate_bigram_sentences(sentence_number, bigram)
+		generate_bigram_sentences(bigram_model, sentence_number)
 	end = datetime.datetime.now()
 
 	print "\nProcessed %d tokens." % len(tokens)
@@ -164,7 +97,7 @@ if __name__ == "__main__":
 			if os.path.exists(value):
 				if os.path.isdir(value):
 					random_sentence_number = parse_random_number_flag(args)
-					main(save_model_name, random_sentence_number, value, None)
+					main(random_sentence_number, value, None)
 				else:
 					print "\nExpected '%s' to be the path to a target directory, not file." % value
 					quit()
@@ -185,7 +118,7 @@ if __name__ == "__main__":
 			if os.path.exists(value):
 				if value[-4:] == ".txt":
 					random_sentence_number = parse_random_number_flag(args)
-					main(save_model_name, random_sentence_number, None, value)
+					main(random_sentence_number, None, value)
 				else:
 					print "\nExpected '%s' to be a .txt file." % value
 					quit()
