@@ -1,8 +1,8 @@
 import random
 
-ALL_PUNCT = [",",";", ":", "'", "-", ".","!","?", '...', '--']
+ALL_PUNCT = [",",";", ":", "-", ".","!","?", '...', '--']
 END_SENTENCE_PUNCT = [".","!","?"]
-IGNORE_PUNCT = ["''", "``", '""', "<", ">", '"', "_", "__", "{", "}", "[", "]"]
+IGNORE_PUNCT = ["''", "``", '""', "<", ">", '"', "'", "_", "__", "{", "}", "[", "]"]
 
 def add_word_to_sentence(sentence, word, override=False):
 	space = True
