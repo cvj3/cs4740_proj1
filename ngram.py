@@ -110,7 +110,7 @@ def main(save_model_name, sentence_number, dir_name, file_name):
 	print "\nProcessed %d tokens." % len(tokens)
 	print "Finished in %s seconds." % str((end - start).seconds)
 
-def handleRSFlags(args):
+def parse_random_number_flag(args):
 	save_model_name = None
 	random_sentence_number = None
 	if "-r" in args:
@@ -125,14 +125,7 @@ def handleRSFlags(args):
 				quit()
 			else:
 				random_sentence_number = int(value)
-	if "-s" in args:
-		value_index = args.index("-s") + 1
-		if len(args) <= value_index:
-			print "\nExpected a field after '-s'"
-			quit()
-		else:
-			save_model_name = args[value_index]
-	return save_model_name, random_sentence_number
+	return random_sentence_number
 
 if __name__ == "__main__":
 	args = sys.argv
@@ -141,9 +134,6 @@ if __name__ == "__main__":
 
 	if "-h" in args or "-help" in args or "--help" in args:
 		print "\n\nNGRAM.PY USAGE GUIDE:\n\nNote that multiple Flags cannot be abbreviated into one (such as '-fr')\n\n"
-
-		print "-m\t\tModel Target Flag\n"
-		print "\t\tIndicates that the field immediately following it is the\n\t\tfile name of the saved model for use.\n\t\tIt is required to use either this, the '-d', or the '-f' flag.\n\n"
 
 		print "-d\t\tDirectory Target Flag\n"
 		print "\t\tIndicates that the field immediately following it is a\n\t\tdirectory and should be used as the corpus.\n\t\tIt is required to use either this, the '-f', or the '-m' flag.\n\n"
@@ -154,9 +144,6 @@ if __name__ == "__main__":
 		print "\t-r\tRandom Sentence Flag\n"
 		print "\t\tIndicates that the field immediately following it is an\n\t\tinteger representing the number of random sentences to\n\t\tgenerate for the generated models.  This flag is optional.\n\t\tIf used, this flag must be used with a -f, -d, or -m flag.\n\n"
 		
-		print "\t-s\tSave Model Flag\n"
-		print "\t\tIndicates that the field immediately following it is a\n\t\tpath to a .txt file where model computed by ngram.py should\n\t\tbe saved.  This flag is optional.  If used, this flag must\n\t\tbe used with a -f or -d flag.\n\n"
-
 		print "-h, -help, or --help\n"
 		print "\t\tDisplays the help menu which describes all possible arguments."
 		quit()
@@ -176,7 +163,7 @@ if __name__ == "__main__":
 			value = args[value_index]
 			if os.path.exists(value):
 				if os.path.isdir(value):
-					save_model_name, random_sentence_number = handleRSFlags(args)
+					random_sentence_number = parse_random_number_flag(args)
 					main(save_model_name, random_sentence_number, value, None)
 				else:
 					print "\nExpected '%s' to be the path to a target directory, not file." % value
@@ -197,7 +184,7 @@ if __name__ == "__main__":
 			value = args[value_index]
 			if os.path.exists(value):
 				if value[-4:] == ".txt":
-					save_model_name, random_sentence_number = handleRSFlags(args)
+					random_sentence_number = parse_random_number_flag(args)
 					main(save_model_name, random_sentence_number, None, value)
 				else:
 					print "\nExpected '%s' to be a .txt file." % value
