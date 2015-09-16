@@ -21,18 +21,21 @@ def word_from_bigram_model_and_previous_word(bigram, word):
 	word = weighted_random_pick(bigram[word])
 	return word
 
-def generate_bigram_sentences(bigram_model, number):
+def generate_bigram_sentences(bigram_model, number, sentence="", starting_word="."):
 	for i in range(number):
-		starting_word = "."
+		if starting_word != "." and not bigram_model.get(starting_word):
+			starting_word = "."
+			sentence = ""
+			print "Error occurred, starting word = '" + starting_word + "' doesn't exist in corpus.  Generating random sentence."
 		while starting_word in END_SENTENCE_PUNCT:
 			starting_word = random.choice(bigram_model.keys())
-		sentence = starting_word.title()
+		if not sentence: sentence = starting_word.title()
 		base_word = starting_word
 		word = None
 		while word not in END_SENTENCE_PUNCT:
 			word = word_from_bigram_model_and_previous_word(bigram_model, base_word)
 			sentence, word = add_word_to_sentence(sentence, word)
-			if word: 
+			if word:
 				base_word = word
 		try:
 			print sentence
