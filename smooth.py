@@ -1,18 +1,10 @@
 from saved_models.unigram import unigram_model
-from lib.unigram_model import getTotalCount
-from lib.unigram_model import getSingletonCount
-
 from saved_models.bigram import bigram_model
-from lib.bigram_model import getTotalCount as getTotalCount2
-from lib.bigram_model import getSingletonCount as getSingletonCount2
-
 from saved_models.trigram import trigram_model
-from lib.trigram_model import getTotalCount as getTotalCount3
-from lib.trigram_model import getSingletonCount as getSingletonCount3
 # from nltk import word_tokenize
 import os
 import sys
-from lib.GoodTuring import unknown_probability, discount_probability
+from lib.GoodTuring import probabilityGoodTuring
 
 __author__ = "Alin Barsan, Curtis Josey"
 
@@ -28,44 +20,14 @@ __author__ = "Alin Barsan, Curtis Josey"
 
 def main():
     # get number of total n-grams
-    print "\n...Unigram Mass..."
-    thisModel = unigram_model
-    # get number of singleton n-grams
-    singletonMass = getSingletonCount(thisModel)
-    print "singletonMass:\t%d" % (singletonMass)
-    totalMass = getTotalCount(thisModel)
-    print "totalMass:\t%d" % (totalMass)
+    print "\nUnigram Model with Good-Turing Smoothing..."
+    probabilityGoodTuring(1, unigram_model, "<unk>", True)
 
-    # calculate probably of unknown
-    print "%% Unknown Unigram:\t%.12f" % unknown_probability(singletonMass, totalMass)
-    # discount the MLE probability for known singletons
-    print "%% Singleton (Smoothed):\t%.12f" % discount_probability(singletonMass, totalMass)
+    print "\nBigram Model with Good-Turing Smoothing..."
+    probabilityGoodTuring(2, bigram_model, "<unk>", True)
 
-    print "\n...Bigram Mass..."
-    thisModel2 = bigram_model
-    # get number of singleton n-grams
-    singletonMass = getSingletonCount2(thisModel2)
-    print "singletonMass:\t%d" % (singletonMass)
-    totalMass = getTotalCount2(thisModel2)
-    print "totalMass:\t%d" % (totalMass)
-
-    # calculate probably of unknown
-    print "%% Unknown Bigram:\t%.12f" % unknown_probability(singletonMass, totalMass)
-    # discount the MLE probability for known singletons
-    print "%% Singleton (Smoothed):\t%.12f" % discount_probability(singletonMass, totalMass)
-
-    print "\n...Trigram Mass..."
-    thisModel3 = trigram_model
-    # get number of singleton n-grams
-    singletonMass = getSingletonCount3(thisModel3)
-    print "singletonMass:\t%d" % (singletonMass)
-    totalMass = getTotalCount3(thisModel3)
-    print "totalMass:\t%d" % (totalMass)
-
-    # calculate probably of unknown
-    print "%% Unknown Trigram:\t%.12f" % unknown_probability(singletonMass, totalMass)
-    # discount the MLE probability for known singletons
-    print "%% Singleton (Smoothed):\t%.12f" % discount_probability(singletonMass, totalMass)
+    print "\nTrigram Mass with Good-Turing Smoothing..."
+    probabilityGoodTuring(3, trigram_model, "<unk>", True)
 
 # argument for the "seed", optional number of sentences
 if __name__ == "__main__":
