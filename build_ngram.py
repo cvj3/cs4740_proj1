@@ -1,5 +1,6 @@
 import sys
 import os
+import ntpath
 import nltk
 import datetime
 nltk.download('punkt')  # Isn't installed by default with NLTK, needed for tokenize.
@@ -39,6 +40,8 @@ def filter_tokens(tokens):
 
 
 def main(dir_name, file_name):
+	if dir_name:
+		genre = ntpath.basename(dir_name)
 	start = datetime.datetime.now()
 	if file_name:
 		tokens = file_to_tokens(file_name)
@@ -50,19 +53,28 @@ def main(dir_name, file_name):
 
 	start = datetime.datetime.now()
 	unigram_model = build_unigram_model(tokens)
-	write_unigram_to_file(unigram_model)	
+	unigram_model_name = "unigram"
+	if dir_name:
+		unigram_model_name = genre + "_" + unigram_model_name
+	write_unigram_to_file(unigram_model, unigram_model_name)	
 	end = datetime.datetime.now()
 	print "\nBuilt and wrote Unigram Model in %s seconds." % str((end-start).seconds)
 
 	start = datetime.datetime.now()
 	bigram_model = build_bigram_model(tokens)
-	write_bigram_to_file(bigram_model)	
+	bigram_model_name = "bigram"
+	if dir_name:
+		bigram_model_name = genre + "_" + bigram_model_name
+	write_bigram_to_file(bigram_model, bigram_model_name)	
 	end = datetime.datetime.now()
 	print "\nBuilt and wrote Bigram Model in %s seconds." % str((end-start).seconds)
 
 	start = datetime.datetime.now()
 	trigram_model = build_trigram_model(tokens)
-	write_trigram_to_file(trigram_model)	
+	trigram_model_name = "trigram"
+	if dir_name:
+		trigram_model_name = genre + "_" + trigram_model_name
+	write_trigram_to_file(trigram_model, trigram_model_name)	
 	end = datetime.datetime.now()
 	print "\nBuilt and wrote Trigram Model in %s seconds." % str((end-start).seconds)
 
