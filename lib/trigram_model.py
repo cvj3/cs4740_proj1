@@ -15,10 +15,10 @@ def build_trigram_model(tokens):
     return q
 
 
-def write_trigram_to_file(trigram_model):
-    f = open("saved_models/trigram.py", "w")
+def write_trigram_to_file(trigram_model, name):
+    f = open("saved_models/" + name + ".py", "w")
     str_model = str(trigram_model).replace(", ", ",\n\t").replace("{", "{\n\t").replace("}", "\n}").replace("},\n\t", "},\n").replace("\t", "", 1)
-    write_str = 'trigram_model = ' + str_model
+    write_str = 'model = ' + str_model
     f.write(write_str)
     f.close()
 

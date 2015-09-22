@@ -9,10 +9,10 @@ def build_unigram_model(tokens):
     return unigram_model
 
 
-def write_unigram_to_file(unigram_model):
-    f = open("saved_models/unigram.py", "w")
+def write_unigram_to_file(unigram_model, name):
+    f = open("saved_models/" + name + ".py", "w")
     str_model = str(unigram_model).replace(", ", ",\n\t").replace("{","{\n\t").replace("}","\n}")
-    write_str = 'unigram_model = ' + str_model
+    write_str = 'model = ' + str_model
     f.write(write_str)
     f.close()
 
