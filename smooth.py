@@ -4,7 +4,7 @@ from saved_models.trigram import trigram_model
 # from nltk import word_tokenize
 import os
 import sys
-from lib.GoodTuring import probabilityGoodTuring
+from lib.GoodTuring import createSmoothedModel
 
 __author__ = "Alin Barsan, Curtis Josey"
 
@@ -21,13 +21,13 @@ __author__ = "Alin Barsan, Curtis Josey"
 def main():
     # get number of total n-grams
     print "\nUnigram Model with Good-Turing Smoothing..."
-    probabilityGoodTuring(1, unigram_model, "<unk>", True)
+    createSmoothedModel(1, unigram_model, "<unk>", True)
 
     print "\nBigram Model with Good-Turing Smoothing..."
-    probabilityGoodTuring(2, bigram_model, "<unk>", True)
+    createSmoothedModel(2, bigram_model, "<unk>", True)
 
-    print "\nTrigram Mass with Good-Turing Smoothing..."
-    probabilityGoodTuring(3, trigram_model, "<unk>", True)
+#    print "\nTrigram Mass with Good-Turing Smoothing..."
+#    createSmoothedModel(3, trigram_model, "<unk>", True)
 
 # argument for the "seed", optional number of sentences
 if __name__ == "__main__":
