@@ -30,24 +30,19 @@ from common import SMOOTHING_LIMIT
 def createSmoothedModel(nGrams, model, verboseMode=False):
     probability = 0
 
-    # cache totalCounts
-    N = getTotalCount(nGrams, model)
-    # cache max frequency
-    cMax = getMaxCount(nGrams, model)
+    # build dictionary of "c" (MLE) with counts - get dictionary of format {count: number_of_occurences}
+    # get total count and max count
+    bins, N, cMax = getCounts(nGrams, model)
+    # turn into format: {count: [number_of_occurences, 0, 0]}
+    # also adds in any unseen counts up to max with # of occurences = 0
+    for c in range(0, cMax+1):
+        bins[c] = [bins.get(c,0), 0, 0]
+
     if verboseMode:
         print "Total %d-nGram count:\t%d" % (nGrams, N)
         print "Max Frequency:\t\t%d" % (cMax)
         print "\r\nc\tNc\tc*\t\tP*_GT"
         print "=============================================="
-    # initialize dictionary object
-    bins = dict()
-    # build dictionary of "c" (MLE) with counts
-    for c in range(0, cMax+1):
-        Nc = getCount(nGrams, model, c)
-        newEntry = [Nc, 0, 0]
-        bins.update({c: newEntry})
-#        if verboseMode:
-#            print "bin[%d]: \t%d" % (c, bins[c][0])
 
     # loop through each "c", and set/update probability
     for c in range(0, cMax+1):
@@ -90,8 +85,8 @@ def createSmoothedModel(nGrams, model, verboseMode=False):
                 if (bins[c][0] != 0) or (c == 0):
                     print "%d\t%d\t%f\t%.12f" % (c, bins[c][0], bins[c][1], bins[c][2])
                     cnt += 1
-
-    return bins
+    smoothed_model = updateModel(nGrams, model, bins)
+    return model
 
 
 # c*=(c + 1) N(c+1)/Nc
@@ -135,64 +130,59 @@ def exportTable(bins, genre):
     return False
 
 
-def getCount(nGrams, model, Nc=1):
-    count = 0
+def getCounts(nGrams, model):
+    bins = {}
+    N = 0
+    cMax = 0
 
     if nGrams == 1:
         for token in model:
-            if model[token] == Nc:
-                count += 1
+            value = model[token]
+            bins[value] = bins.get(value, 0) + 1
+            N += value
+            if value > cMax: cMax = value
     elif nGrams == 2:
         for bigram in model.values():
             for token in bigram:
-                if bigram[token] == Nc:
-                    count += 1
+                value = bigram[token]
+                bins[value] = bins.get(value, 0) + 1
+                N += value
+                if value > cMax: cMax = value
     elif nGrams == 3:
         for trigram in model:
             for key in model[trigram]:
-                # count += float(sum(key.values()))
                 for value in model[trigram][key].values():
-                    if value == Nc:
-                        count += 1
+                    bins[value] = bins.get(value, 0) + 1
+                    N += value
+                    if value > cMax: cMax = value
 
-    return count
+    return bins, N, cMax
 
-
-def getTotalCount(nGrams, model):
-    count = 0
-
+def updateModel(nGrams, model, bins):
+    prob_unk = bins[0][2]
     if nGrams == 1:
+        local_sum = 0
         for token in model:
-            count += model[token]
+            value = model[token]
+            model[token] = bins[value][1]
+            local_sum += model[token]
+        model["<unk>"] = (prob_unk * local_sum) / (1 - prob_unk)
+            
     elif nGrams == 2:
         for bigram in model.values():
-            count += float(sum(bigram.values()))
-    elif nGrams == 3:
-        for trigram in model:
-            for key in model[trigram].values():
-                count += float(sum(key.values()))
-
-    return count
-
-
-def getMaxCount(nGrams, model):
-    count = 0
-
-    if nGrams == 1:
-        for token in model:
-            if model[token] > count:
-                count = model[token]
-    elif nGrams == 2:
-        for bigram in model.values():
+            local_sum = 0
             for token in bigram:
-                if bigram[token] > count:
-                    count = bigram[token]
+                value = bigram[token]                
+                bigram[token] = bins[value][1]
+                local_sum += bigram[token]
+            bigram["<unk>"] = (prob_unk * local_sum) / (1 - prob_unk)
     elif nGrams == 3:
-        for trigram in model:
-            for key in model[trigram]:
-                # count += float(sum(key.values()))
-                for value in model[trigram][key].values():
-                    if value > count:
-                        count = value
-
-    return count
+        for one in model:
+            for two in model[one]:
+                local_sum = 0
+                for three in model[one][two].keys():
+                    value = model[one][two][three]
+                    model[one][two][three] = bins[value][1]
+                    local_sum += model[one][two][three]
+                model[one][two]["<unk>"] = (prob_unk * local_sum) / (1 - prob_unk)
+    return model
