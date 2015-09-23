@@ -1,12 +1,20 @@
-from saved_models.unigram import unigram_model
-from saved_models.bigram import bigram_model
-from saved_models.trigram import trigram_model
+from saved_models.children_unigram import model as model1
+from saved_models.children_bigram import model as model2
+from saved_models.children_trigram import model as model3
+from saved_models.crime_unigram import model as model4
+from saved_models.crime_bigram import model as model5
+from saved_models.crime_trigram import model as model6
+from saved_models.history_unigram import model as model7
+from saved_models.history_bigram import model as model8
+from saved_models.history_trigram import model as model9
+
 # from nltk import word_tokenize
 import os
 import sys
 from lib.GoodTuring import createSmoothedModel
 
 __author__ = "Alin Barsan, Curtis Josey"
+# DEVNOTE: DO NOT IMPORT THIS FILE, ALIN is working on an improved version
 
 
 # Good-Turning discounting/smoothing (and unknown words) in the test data;
@@ -16,24 +24,19 @@ __author__ = "Alin Barsan, Curtis Josey"
 # load model
 # estimate probability of unseens words, by counting
 # ... things only seen once / total # of words
-
-
 def main():
     # get number of total n-grams
     print "\nUnigram Model with Good-Turing Smoothing..."
-    createSmoothedModel(1, unigram_model, "<unk>", True)
+    createSmoothedModel(1, model1, True)
 
     print "\nBigram Model with Good-Turing Smoothing..."
-    createSmoothedModel(2, bigram_model, "<unk>", True)
+    createSmoothedModel(2, model2, True)
 
 #    print "\nTrigram Mass with Good-Turing Smoothing..."
 #    createSmoothedModel(3, trigram_model, "<unk>", True)
 
 # argument for the "seed", optional number of sentences
 if __name__ == "__main__":
-    gen_num_sentences = 1
-    seed_value = ""
-
     # cache arguments passed via command line
     args = sys.argv
 

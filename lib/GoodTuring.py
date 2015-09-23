@@ -1,8 +1,5 @@
 from __future__ import division
 from common import SMOOTHING_LIMIT
-from lib.unigram_model import write_unigram_to_file
-from lib.bigram_model import write_bigram_to_file
-from lib.trigram_model import write_trigram_to_file
 
 # Future Improvement: consider the need to smooth Nc counts to replace any 0s
 #        "use linear regression of Nc and c in log space."
@@ -15,18 +12,31 @@ from lib.trigram_model import write_trigram_to_file
 # [X]: moved _THRESHOLD to common.py, renamed / all caps
 # [X]: import lib.*gram_model.py
 # TODO: smoothing map S[C] = c*
+# add an new <u> value
+# if value above threshold, just pass c back unmodified
+# else return smoothed c
+# add "<unk>" = computed (sum [c*'s]') * p(<unk>) / (1 - p(<unk>))
 # TODO: replace counts of existing model, with c_smoothed counts
-# TODO: call write_unigram_to_file(smoothed_unigram)
-# TODO: add optional filename parameter
-# <smoothed>/>_<genre>_<ngram>_model
-# e.g.  crime_bigram_model
-# e.g., crime_bigram_model_smoothed
+# TODO: return the model, with the new c_smoothed values in it
+#???? for unigram (consider adding an extra 1)
+
+
+# just focus on c* are correct
+
+
+# probabilityUnknown, convert to a count* ()
+# P(<u>) = u* / (u* + all)
+# A { B: 1, C: 1}
+# P(<u>) = .33
+# A { B: 1, C: 1, <u> = 1} ... because they all sum to 1
+
+# Pu * all / (1 - Pu) = 1/3(unknown probability) * 2(words) / (1 - 1/3 (unknown probability)) = 2/3 / 2/3 = 1
 
 
 # adjust probability of singletons to account for unknown
 # nGram: the unigram, bigram or trigram model
 # genre: (optional), not currently used
-def createSmoothedModel(nGrams, model, genre="<unk>", verboseMode=False):
+def createSmoothedModel(nGrams, model, verboseMode=False):
     probability = 0
 
     # cache totalCounts
@@ -36,8 +46,8 @@ def createSmoothedModel(nGrams, model, genre="<unk>", verboseMode=False):
     if verboseMode:
         print "Total %d-nGram count:\t%d" % (nGrams, N)
         print "Max Frequency:\t\t%d" % (cMax)
-        print "\r\nc\tNc\tc*\tP*_GT"
-        print "=============================="
+        print "\r\nc\tNc\tc*\t\tP*_GT"
+        print "=============================================="
     # initialize dictionary object
     bins = dict()
     # build dictionary of "c" (MLE) with counts
@@ -49,22 +59,22 @@ def createSmoothedModel(nGrams, model, genre="<unk>", verboseMode=False):
 #            print "bin[%d]: \t%d" % (c, bins[c][0])
 
     # loop through each "c", and set/update probability
-    for c in range(0, cMax):
+    for c in range(0, cMax+1):
         probability = 0
-        c_new = c
-
-        if c == 0:
-            # return unknown probability
-            singletonCount = bins[1][0]
-            c_new = c_unknown(singletonCount, N)
-            probability = unknown_probability(singletonCount, N)
+        c_star = c
+        # print c
         if c <= SMOOTHING_LIMIT:
-            # get smoothed probability
-            if bins[c][0] != 0:
+            if c == 0:
+                # return unknown probability
+                singletonCount = bins[1][0]
+                probability = unknown_probability(singletonCount, N)
+            else:
+                # get smoothed probability
                 if bins[c+1][0] != 0:
-                    c_new = c_smoothed(c, bins[c+1][0], bins[c][0])
+                    c_star = c_smoothed(c, bins[c+1][0], bins[c][0])
                     probability = smoothed_probability(c, bins[c+1][0], bins[c][0], N)
                 else:
+                    probability = 0
                     # naive catch-all for when Nc+1 = 0
                     probability = float(normal_probability(c, N) * unknown_probability(singletonCount, N))
         else:
@@ -72,7 +82,8 @@ def createSmoothedModel(nGrams, model, genre="<unk>", verboseMode=False):
             if bins[c][0] != 0:
                 probability = normal_probability(c, N)
 
-        bins[c][1] = c_new
+        # print c_star
+        bins[c][1] = c_star
         bins[c][2] = probability
 
     if verboseMode:
@@ -87,11 +98,10 @@ def createSmoothedModel(nGrams, model, genre="<unk>", verboseMode=False):
     return probability
 
 
-
-def c_smoothed(c, Nc1, Nc):
-    c_smoothed = float((c + 1) * (float(Nc1) / Nc))  # shouldn't this be Nc1 / Nc??
-
-    return c_smoothed
+# c*=(c + 1) N(c+1)/Nc
+def c_smoothed(c, Nc_plus1, Nc):
+    ret_value = (c + 1) * float(Nc_plus1 / Nc)
+    return ret_value
 
 
 # c: number of times an n-gram occurs
@@ -180,7 +190,7 @@ def getMaxCount(nGrams, model):
         for bigram in model.values():
             for token in bigram:
                 if bigram[token] > count:
-                    count += bigram[token]
+                    count = bigram[token]
     elif nGrams == 3:
         for trigram in model:
             for key in model[trigram]:

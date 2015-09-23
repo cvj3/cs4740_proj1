@@ -1,4 +1,4 @@
-bigram_model = {
+model = {
 u'a': {
 	u'b': 5,
 	u'c': 5
