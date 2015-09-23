@@ -27,10 +27,10 @@ __author__ = "Alin Barsan, Curtis Josey"
 def main():
     # get number of total n-grams
     print "\nUnigram Model with Good-Turing Smoothing..."
-    createSmoothedModel(1, model1, True)
+    binGT = createSmoothedModel(1, model1, True)
 
     print "\nBigram Model with Good-Turing Smoothing..."
-    createSmoothedModel(2, model2, True)
+    binGT = createSmoothedModel(2, model2, True)
 
 #    print "\nTrigram Mass with Good-Turing Smoothing..."
 #    createSmoothedModel(3, trigram_model, "<unk>", True)

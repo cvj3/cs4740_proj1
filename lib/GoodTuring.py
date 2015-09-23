@@ -8,20 +8,11 @@ from common import SMOOTHING_LIMIT
 
 # as recommended by Katz (1987); last value of c to apply Good-Turing smoothing
 
-# [X] renamed primary function to createSmoothedModel
-# [X]: moved _THRESHOLD to common.py, renamed / all caps
-# [X]: import lib.*gram_model.py
-# TODO: smoothing map S[C] = c*
-# add an new <u> value
-# if value above threshold, just pass c back unmodified
-# else return smoothed c
-# add "<unk>" = computed (sum [c*'s]') * p(<unk>) / (1 - p(<unk>))
-# TODO: replace counts of existing model, with c_smoothed counts
-# TODO: return the model, with the new c_smoothed values in it
-#???? for unigram (consider adding an extra 1)
-
-
-# just focus on c* are correct
+# NOT IMPLEMENTED: smoothing map S[C] = c*
+# NOT IMPLEMENTED: add an new <u> value
+# NOT IMPLEMENTED: if value above threshold, just pass c back unmodified
+# NOT IMPLEMENTED: else return smoothed c
+# NOT IMPLEMENTED: add "<unk>" = computed (sum [c*'s]') * p(<unk>) / (1 - p(<unk>))
 
 
 # probabilityUnknown, convert to a count* ()
@@ -92,10 +83,15 @@ def createSmoothedModel(nGrams, model, verboseMode=False):
             if (bins[c][0] != 0) or (c == 0):
                 print "%d\t%d\t%f\t%.12f" % (c, bins[c][0], bins[c][1], bins[c][2])
                 cnt += 1
-            #if cnt > 10:
-            #    break
+            if cnt > 10:
+                break
+        if cMax > 10:
+            for c in range((cMax - 10), cMax+1):
+                if (bins[c][0] != 0) or (c == 0):
+                    print "%d\t%d\t%f\t%.12f" % (c, bins[c][0], bins[c][1], bins[c][2])
+                    cnt += 1
 
-    return probability
+    return bins
 
 
 # c*=(c + 1) N(c+1)/Nc
