@@ -45,7 +45,7 @@ def probability_trigram(target, models, word_prev, word_prev_two, totals):
 
 def parse_test_data(dir_path):
 	tokens = dir_to_tokens(dir_path)
-	tokens = filter_tokens(tokens)
+	#tokens = filter_tokens(tokens)
 	return tokens
 
 def buildCounts(models):
@@ -138,7 +138,7 @@ def main(dir_path):
 	end = datetime.datetime.now()
 	print "\nCalculated 'Children' models perplexity in %s seconds." % str(float((end-start).seconds) + (end-start).microseconds / 1000000.0)
 	print "\tUnigram Perplexity: %5f\n\tBigram Perplexity: %5f\n\tTrigram Perplexity: %5f\n" % (u_p, b_p, t_p)
-	print "\tScaled Trigram Perplexity: %5f" % get_scaled_trigram_perplexity(trigram, tokens, t_p)
+	#print "\tScaled Trigram Perplexity: %5f" % get_scaled_trigram_perplexity(trigram, tokens, t_p)
 
 	start = datetime.datetime.now()
 	from saved_models.crime_unigram_smoothed import model as unigram
@@ -160,7 +160,7 @@ def main(dir_path):
 	end = datetime.datetime.now()
 	print "\nCalculated 'Crime' models perplexity in %s seconds." % str(float((end-start).seconds) + (end-start).microseconds / 1000000.0)
 	print "\tUnigram Perplexity: %5f\n\tBigram Perplexity: %5f\n\tTrigram Perplexity: %5f\n" % (u_p, b_p, t_p)
-	print "\tScaled Trigram Perplexity: %5f" % get_scaled_trigram_perplexity(trigram, tokens, t_p)
+	#print "\tScaled Trigram Perplexity: %5f" % get_scaled_trigram_perplexity(trigram, tokens, t_p)
 
 
 	start = datetime.datetime.now()
@@ -183,7 +183,7 @@ def main(dir_path):
 	end = datetime.datetime.now()
 	print "\nCalculated 'History' models perplexity in %s seconds." % str(float((end-start).seconds) + (end-start).microseconds / 1000000.0)
 	print "\tUnigram Perplexity: %5f\n\tBigram Perplexity: %5f\n\tTrigram Perplexity: %5f" % (u_p, b_p, t_p)
-	print "\tScaled Trigram Perplexity: %5f" % get_scaled_trigram_perplexity(trigram, tokens, t_p)
+	#print "\tScaled Trigram Perplexity: %5f" % get_scaled_trigram_perplexity(trigram, tokens, t_p)
 
 
 if __name__ == "__main__":
