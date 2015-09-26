@@ -35,7 +35,7 @@ def generate_bigram_sentences(bigram_model, number, sentence="", starting_word="
 		while word not in END_SENTENCE_PUNCT:
 			word = word_from_bigram_model_and_previous_word(bigram_model, base_word)
 			sentence, word = add_word_to_sentence(sentence, word)
-			if word: 
+			if word:
 				base_word = word
 		try:
 			print sentence

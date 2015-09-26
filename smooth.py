@@ -21,7 +21,7 @@ __author__ = "Alin Barsan, Curtis Josey"
 def main():
     print "\nCreating 'Children' Unigram Model with Good-Turing Smoothing..."
     start = datetime.datetime.now()
-    from saved_models.children_unigram import model    
+    from saved_models.children_unigram import model
     end = datetime.datetime.now()
     print "\tLoaded model in %s seconds." % str(float((end-start).seconds) + (end-start).microseconds / 1000000.0)
 
@@ -38,7 +38,7 @@ def main():
 
     print "\nCreating 'Children' Bigram Model with Good-Turing Smoothing..."
     start = datetime.datetime.now()
-    from saved_models.children_bigram import model    
+    from saved_models.children_bigram import model
     end = datetime.datetime.now()
     print "\tLoaded model in %s seconds." % str(float((end-start).seconds) + (end-start).microseconds / 1000000.0)
 

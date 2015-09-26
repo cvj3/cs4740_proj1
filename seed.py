@@ -1,5 +1,5 @@
 from lib.bigram_model import generate_bigram_sentences
-from saved_models.bigram import bigram_model
+from saved_models.children_bigram import model as bigram_model
 from nltk import word_tokenize
 import os
 import sys

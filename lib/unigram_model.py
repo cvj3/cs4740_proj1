@@ -29,25 +29,3 @@ def generate_unigram_sentences(unigram_model, number):
         except:
             print "Could not print sentence due to an unrecognized character."
         print "\n"
-
-
-def getSingletonCount(unigram_model):
-    count = 0
-
-    for token in unigram_model:
-        if unigram_model[token] == 1:
-            count += unigram_model[token]
-
-    return count
-
-
-def getTotalCount(unigram_model):
-    count = 0
-
-    for token in unigram_model:
-        count += unigram_model[token]
-    # short-hand for above logic:
-    # print float(sum(unigram_model.values()))
-
-    return count
-

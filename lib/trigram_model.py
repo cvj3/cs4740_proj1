@@ -66,25 +66,3 @@ def generate_trigram_sentences(trigram_model, number):
         except:
             print "Could not print sentence due to an unrecognized character."
         print "\n"
-
-
-def getSingletonCount(trigram_model):
-    count = 0
-
-    for gram in trigram_model:
-        for key in trigram_model[gram]:
-            # count += float(sum(key.values()))
-            for value in trigram_model[gram][key].values():
-                if value == 1:
-                    count += 1
-
-    return count
-
-
-def getTotalCount(trigram_model):
-    count = 0  # Counter()
-    for gram in trigram_model:
-        for key in trigram_model[gram].values():
-            count += float(sum(key.values()))
-
-    return count

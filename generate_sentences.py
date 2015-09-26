@@ -1,11 +1,11 @@
 import sys
 # import datetime
 # print "\n\nLoading Models..."
-from saved_models.unigram import unigram_model
+from saved_models.children_unigram import model as unigram_model
 from lib.unigram_model import generate_unigram_sentences
-from saved_models.bigram import bigram_model
+from saved_models.children_bigram import model as bigram_model
 from lib.bigram_model import generate_bigram_sentences
-from saved_models.trigram import trigram_model
+from saved_models.children_trigram import model as trigram_model
 from lib.trigram_model import generate_trigram_sentences
 print "Done!\n\n"
 
